@@ -129,5 +129,5 @@ Aplicação em produção: https://github.com/GuilhermeDeCosta/Busca-Peca-Web
 
 *   Gabriel Vinicius Silva Marchetto - RA: 23180663-2
 *   Guilherme Da Costa Castro  - RA: 23126934-2
-*   Pedro Magalhães - RA: [RA 3]
+*   Pedro Magalhães - RA: 23021836-2
 *   Douglas Kenji - RA: 23403549-2
