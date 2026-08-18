@@ -1,0 +1,1540 @@
+
+"Adicione um novo campo chamado 'Garantia (meses)' neste formulário."
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minha Loja – Busca Peças</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+ 
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="/front-web/TelaPrincipal/index.html" class="logo-link" title="Busca Peças – Página Principal">
+      <div class="logo-img-wrap">
+        <img src="../TelaPrincipal/sem fundo site.png" onerror="this.style.display='none'">
+      </div>
+      <div class="logo-text-block">
+        <div class="logo-title">BUSCA <span>PEÇAS</span></div>
+        <div class="logo-sub">Delivery de Autopeças</div>
+      </div>
+    </a>
+    <nav>
+      <a href="/front-web/TelaPrincipal/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span class="nav-text">Início</span>
+      </a>
+      <a href="../TelaCompras/compras.html" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span class="nav-text">Compras</span>
+      </a>
+      <a href="/front-web/TelaLogin/login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="nav-text">Login</span>
+      </a>
+    </nav>
+  </div>
+</header>
+ 
+<!-- BANNER DA LOJA -->
+<div class="store-banner">
+  <div class="store-banner-inner">
+    <div class="store-logo-wrap">
+      <div class="no-img">🏪</div>
+    </div>
+    <div class="store-info">
+      <div class="store-badge">✔ Loja Verificada</div>
+      <h1 class="store-name">Autopeças Central</h1>
+      <p class="store-desc">Especialistas em peças automotivas para todas as marcas. Delivery rápido em Maringá e região.</p>
+      <div class="store-stats">
+        <div class="stat-item">
+          <div class="stat-num" id="stat-total">–</div>
+          <div class="stat-label">Peças</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num" id="stat-marcas">–</div>
+          <div class="stat-label">Marcas</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num" id="stat-estoque">–</div>
+          <div class="stat-label">Em Estoque</div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Barra de status da API -->
+  <div class="api-status-bar">
+    <div class="api-status-inner">
+      <div class="api-dot loading" id="api-dot"></div>
+      <span id="api-status-txt">Conectando à API…</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- PRODUTOS -->
+<div class="products-section">
+  <div class="section-header">
+    <h2 class="section-title-main">Peças <span>Cadastradas</span></h2>
+    <div class="filters-row">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Buscar peça ou código…"
+          oninput="debounceSearch(this.value)"
+        />
+      </div>
+      <div class="filters" id="filtros-marca">
+        <button class="filter-btn active" onclick="filtrarMarca(null, this)">Todas as marcas</button>
+        <!-- Marcas carregadas via JS -->
+      </div>
+    </div>
+  </div>
+ 
+  <div class="products-grid" id="products-grid">
+    <!-- Skeletons iniciais -->
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+  </div>
+ 
+  <!-- Paginação -->
+  <div class="pagination" id="paginacao" style="display:none"></div>
+ 
+  <!-- Botão de adicionar peça -->
+  <div class="add-btn-wrap">
+    <button class="btn-add-peca" onclick="abrirModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="16"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+      </svg>
+      Cadastrar Nova Peça
+    </button>
+  </div>
+</div>
+ 
+<!-- OVERLAY + MODAL -->
+<div class="overlay" id="overlay" onclick="fecharModalOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title">Cadastrar <span>Nova Peça</span></div>
+      <button class="modal-close" onclick="fecharModal()" title="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+ 
+      <!-- Identificação -->
+      <div class="form-section-label" style="margin-bottom:16px">🔧 Identificação da Peça</div>
+      <div class="form-grid one" style="margin-bottom:14px">
+        <div class="field">
+          <label>Nome da Peça <span class="req">*</span></label>
+          <input type="text" id="m-nome" placeholder="Ex: Amortecedor Dianteiro Esquerdo" />
+        </div>
+      </div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field">
+          <label>Código da Peça <span class="req">*</span></label>
+          <input type="text" id="m-oem" placeholder="Ex: 4852002271" oninput="this.value=this.value.replace(/[^A-Z0-9a-z-]/g,'').toUpperCase()" />
+        </div>
+        <div class="field">
+          <label>Marca <span class="req">*</span></label>
+          <div class="select-loading" id="select-marca-wrap">
+            <select id="m-brandId">
+              <option value="">Carregando marcas…</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:22px">
+        <label>Descrição</label>
+        <textarea id="m-descricao" placeholder="Descreva a peça, compatibilidade, observações técnicas…"></textarea>
+      </div>
+ 
+      <!-- Estoque -->
+      <div class="form-section-label" style="margin-bottom:16px">📦 Estoque</div>
+      <div class="form-grid" style="margin-bottom:22px">
+        <div class="field">
+          <label>Qtd. em Estoque <span class="req">*</span></label>
+          <input type="number" id="m-qtd" placeholder="0" min="0" />
+        </div>
+        <div class="field">
+          <label>Veículos Compatíveis</label>
+          <select id="m-vehicles" multiple style="height:80px">
+            <option value="">Carregando veículos…</option>
+          </select>
+          <span style="font-size:.72rem;color:var(--texto-sub);margin-top:3px">Segure Ctrl para selecionar vários</span>
+        </div>
+      </div>
+ 
+      <!-- Valores -->
+      <div class="form-section-label" style="margin-bottom:16px">💰 Valores</div>
+      <div class="price-group" style="margin-bottom:22px">
+        <div class="field price-prefix">
+          <label>Preço de Venda <span class="req">*</span></label>
+          <span>R$</span>
+          <input type="number" id="m-venda" placeholder="0,00" min="0" step="0.01" />
+        </div>
+        <div class="field price-prefix">
+          <label>Estoque Mínimo</label>
+          <span style="left:12px;bottom:11px;position:absolute;font-size:.8rem;font-weight:700;color:var(--texto-sub)">#</span>
+          <input type="number" id="m-minstock" placeholder="5" min="0" style="padding-left:28px" />
+        </div>
+      </div>
+ 
+      <!-- Foto -->
+      <div class="form-section-label" style="margin-bottom:16px">📸 Foto da Peça</div>
+      <div class="photo-drop" id="modal-drop" onclick="document.getElementById('m-foto').click()">
+        <input type="file" id="m-foto" accept="image/*" onchange="previewModalPhoto(this)" />
+        <div class="photo-drop-icon">🖼️</div>
+        <p><strong>Clique para selecionar</strong> ou arraste aqui</p>
+        <p style="font-size:.72rem;margin-top:3px;color:#aaa">PNG, JPG, WEBP até 10MB – salvo em base64 na descrição</p>
+        <img id="modal-preview-img" alt="Preview" />
+      </div>
+ 
+      <!-- Ações -->
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="limparModal()">Limpar</button>
+        <button class="btn btn-primary" id="btn-salvar" onclick="salvarPeca()">
+          <div class="btn-spinner"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="btn-salvar-icon"><polyline points="20 6 9 17 4 12"/></svg>
+          Salvar Peça
+        </button>
+      </div>
+ 
+    </div>
+  </div>
+</div>
+ 
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span style="font-size:1.3rem" id="toast-icon">✅</span>
+  <span id="toast-msg">Peça cadastrada com sucesso!</span>
+</div>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h2>BUSCA <span>PEÇAS</span></h2>
+      <p>A solução completa para delivery de autopeças. Encontre, cadastre e entregue peças automotivas com agilidade e confiança.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <span style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;font-size:.8rem;color:rgba(255,255,255,.7)">📦 Delivery Rápido</span>
+        <span style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;font-size:.8rem;color:rgba(255,255,255,.7)">🔒 Seguro</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h3>Navegação</h3>
+      <a href="#">🏠 Página Principal</a>
+      <a href="#">➕ Cadastrar Peça</a>
+      <a href="#">🛒 Compras</a>
+      <a href="#">👤 Login / Conta</a>
+    </div>
+    <div class="footer-col">
+      <h3>Suporte</h3>
+      <a href="#">📞 Central de Ajuda</a>
+      <a href="#">📋 Como Cadastrar</a>
+      <a href="#">📦 Rastrear Pedido</a>
+      <a href="#">⚖️ Política de Troca</a>
+    </div>
+  </div>
+ 
+  <div class="team-section">
+    <h3>👨‍💻 Equipe Desenvolvedora</h3>
+    <div class="team-members">
+      <div class="member"><div class="member-avatar" style="background:linear-gradient(135deg,#2A5C84,#1a3f5c);color:#fff">GC</div><div class="member-name">Guilherme Castro</div></div>
+      <div class="member"><div class="member-avatar" style="background:linear-gradient(135deg,#228B45,#155d2b);color:#fff">PM</div><div class="member-name">Pedro Magalhães</div></div>
+      <div class="member"><div class="member-avatar" style="background:linear-gradient(135deg,#FD7E14,#c45e00);color:#fff">GM</div><div class="member-name">Gabriel Marchetto</div></div>
+      <div class="member"><div class="member-avatar" style="background:linear-gradient(135deg,#28A745,#1a6b2e);color:#fff">DM</div><div class="member-name">Douglas Matsumoto</div></div>
+    </div>
+  </div>
+ 
+  <div class="footer-copy">
+    <p>© 2025 <span class="verde">Busca Peças</span> – Delivery de Autopeças. Todos os direitos reservados.</p>
+    <p style="color:rgba(255,255,255,.3);font-size:.75rem;margin-top:4px">Maringá – PR, Brasil</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+  
+</body>
+</html>
+
+
+/* ==========================================
+   CONFIGURAÇÃO E ESTADO DA APLICAÇÃO
+   ========================================== */
+const API_BASE = 'http://localhost:3000/api/v1';
+
+let pecas = [];
+let marcas = [];
+let veiculos = [];
+let paginaAtual = 1;
+let totalPaginas = 1;
+let totalItens = 0;
+let filtroMarca = null;
+let termoBusca = '';
+let timerDebounce = null;
+
+/* ==========================================
+   COMUNICAÇÃO COM A API (FETCH)
+   ========================================== */
+async function apiFetch(path, opcoes = {}) {
+  const url = API_BASE + path;
+  try {
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', ...opcoes.headers },
+      ...opcoes
+    });
+
+    let data;
+    try { data = await res.json(); } catch { data = {}; }
+
+    if (!res.ok) {
+      // Extrai o erro do Zod (se houver) ou a mensagem padrão
+      const erroValidacao = data.issues ? data.issues.map(i => i.message).join(', ') : null;
+      const msg = erroValidacao || data?.message || data?.error || `Erro ${res.status}`;
+      throw new Error(msg);
+    }
+    return data;
+  } catch (erro) {
+    console.error(`Falha ao conectar em ${url}:`, erro);
+    throw erro;
+  }
+}
+
+async function verificarApiStatus() {
+  const dot = document.getElementById('api-dot');
+  const txt = document.getElementById('api-status-txt');
+  if (!dot || !txt) return;
+
+  dot.className = 'api-dot loading';
+  txt.textContent = 'Conectando à API…';
+  
+  try {
+    await apiFetch('/health');
+    dot.className = 'api-dot ok';
+    txt.textContent = `API conectada · ${API_BASE}`;
+  } catch {
+    dot.className = 'api-dot erro';
+    txt.textContent = `API offline · O servidor não respondeu`;
+  }
+}
+
+/* ==========================================
+   CARREGAMENTO DE DADOS (GET)
+   ========================================== */
+async function carregarMarcas() {
+  try {
+    // Tenta procurar na API (mude para a rota correta se necessário, ex: '/vehicles/brands')
+    const respostaAPI = await apiFetch('/brands');
+    
+    if (Array.isArray(respostaAPI)) {
+      marcas = respostaAPI;
+    } else if (respostaAPI && Array.isArray(respostaAPI.data)) {
+      marcas = respostaAPI.data;
+    } else if (respostaAPI && Array.isArray(respostaAPI.brands)) {
+      marcas = respostaAPI.brands;
+    } else {
+      marcas = [];
+    }
+  } catch (e) {
+    console.warn('Rota /brands não encontrada ou vazia. Ativando marcas locais para testes.', e.message);
+    marcas = [];
+  }
+
+  // SE A API NÃO RETORNAR NADA, GERAMOS MARCAS AUTOMÁTICAS PARA CONSEGUIR TRABALHAR:
+  if (marcas.length === 0) {
+    marcas = [
+      { id: "marca-mock-1", name: "Toyota" },
+      { id: "marca-mock-2", name: "Honda" },
+      { id: "marca-mock-3", name: "Volkswagen" },
+      { id: "marca-mock-4", name: "Fiat" },
+      { id: "marca-mock-5", name: "Chevrolet" }
+    ];
+  }
+
+  // Preenche o Select do Modal de Cadastro
+  const sel = document.getElementById('m-brandId');
+  if (sel) {
+    sel.innerHTML = '<option value="">Selecione a marca…</option>';
+    marcas.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Preenche a barra de filtros na página principal
+  const wrap = document.getElementById('filtros-marca');
+  if (wrap) {
+    wrap.querySelectorAll('.filter-btn:not(:first-child)').forEach(b => b.remove());
+    marcas.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn';
+      btn.textContent = m.name;
+      btn.onclick = () => filtrarMarca(m.id, btn);
+      wrap.appendChild(btn);
+    });
+  }
+  
+  const statMarcas = document.getElementById('stat-marcas');
+  if (statMarcas) statMarcas.textContent = marcas.length;
+}
+
+async function carregarVeiculos() {
+  try {
+    // 1. Faz a requisição para a rota de veículos do seu back-end
+    const respostaAPI = await apiFetch('/vehicles');
+    
+    // 2. Extrai com segurança a lista de veículos, não importa como o back-end enviou
+    if (Array.isArray(respostaAPI)) {
+      veiculos = respostaAPI;
+    } else if (respostaAPI && Array.isArray(respostaAPI.data)) {
+      veiculos = respostaAPI.data; // Se o express usar padrão { data: [...] }
+    } else if (respostaAPI && Array.isArray(respostaAPI.vehicles)) {
+      veiculos = respostaAPI.vehicles; // Se o express usar padrão { vehicles: [...] }
+    } else {
+      veiculos = [];
+    }
+  } catch (e) {
+    console.warn('Rota /vehicles falhou ou está vazia. Ativando veículos locais para testes.', e.message);
+    veiculos = [];
+  }
+
+  // 3. SE O BANCO ESTIVER VAZIO OU A ROTA FALHAR, GERAMOS VEÍCULOS DE TESTE AUTOMATICAMENTE:
+  if (veiculos.length === 0) {
+    veiculos = [
+      { id: "veiculo-mock-1", model: "Corolla", year: 2022, brand: { name: "Toyota" } },
+      { id: "veiculo-mock-2", model: "Civic", year: 2021, brand: { name: "Honda" } },
+      { id: "veiculo-mock-3", model: "Gol", year: 2020, brand: { name: "Volkswagen" } },
+      { id: "veiculo-mock-4", model: "Uno", year: 2019, brand: { name: "Fiat" } },
+      { id: "veiculo-mock-5", model: "Onix", year: 2023, brand: { name: "Chevrolet" } }
+    ];
+  }
+
+  // 4. Preenche a caixa de seleção múltipla (Select) no formulário
+  const sel = document.getElementById('m-vehicles');
+  if (!sel) return;
+
+  sel.innerHTML = ''; // Limpa antes de preencher
+  veiculos.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.id;
+    
+    // Pega o nome da marca caso exista no objeto, senão deixa em branco
+    const brandName = v.brand?.name || '';
+    opt.textContent = `${brandName} ${v.model} (${v.year})`.trim();
+    
+    sel.appendChild(opt);
+  });
+}
+
+async function carregarPecas() {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+
+  try {
+    const params = new URLSearchParams({
+      page: paginaAtual,
+      limit: 12
+    });
+    
+    if (termoBusca) params.append('search', termoBusca);
+    if (filtroMarca) params.append('brandId', filtroMarca);
+
+    const respostaAPI = await apiFetch(`/parts/search?${params}`);
+    
+    // --- CORREÇÃO DO MAPEAMENTO DO BACK-END ---
+    // Seu controller envelopa em: { status: 'success', data: { parts: [...] } }
+    if (respostaAPI && respostaAPI.data && Array.isArray(respostaAPI.data.parts)) {
+      pecas = respostaAPI.data.parts;
+    } else if (Array.isArray(respostaAPI)) {
+      pecas = respostaAPI;
+    } else if (respostaAPI && Array.isArray(respostaAPI.data)) {
+      pecas = respostaAPI.data; 
+    } else if (respostaAPI && Array.isArray(respostaAPI.parts)) {
+      pecas = respostaAPI.parts; 
+    } else {
+      pecas = []; 
+    }
+
+    // Tratamento seguro da paginação vinda do seu back-end data
+    if (respostaAPI && respostaAPI.data && respostaAPI.data.pagination) {
+      totalPaginas = respostaAPI.data.pagination.totalPages || 1;
+      totalItens = respostaAPI.data.pagination.totalItems || pecas.length;
+    } else if (respostaAPI && respostaAPI.pagination) {
+      totalPaginas = respostaAPI.pagination.totalPages || 1;
+      totalItens = respostaAPI.pagination.totalItems || pecas.length;
+    } else {
+      totalPaginas = 1;
+      totalItens = pecas.length;
+    }
+    
+    renderPecas();
+    renderPaginacao();
+    atualizarStats();
+  } catch (e) {
+    grid.innerHTML = `
+      <div class="error-state" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+        <h3 style="color: #d9534f;">Erro ao carregar as peças</h3>
+        <p>${e.message}</p>
+        <button onclick="carregarPecas()" class="btn-tentar" style="margin-top:15px; padding:8px 16px; background:#d9534f; color:#fff; border:none; border-radius:4px; cursor:pointer;">🔄 Tentar novamente</button>
+      </div>`;
+  }
+}
+
+function atualizarStats() {
+  const statTotal = document.getElementById('stat-total');
+  if (statTotal) statTotal.textContent = totalItens;
+}
+
+/* ==========================================
+   RENDERIZAÇÃO (UI)
+   ========================================== */
+function renderPecas() {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+
+  if (pecas.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+        <div style="font-size: 3rem;">🔩</div>
+        <h3>Nenhuma peça encontrada</h3>
+        <p>${termoBusca ? `Nenhum resultado para "<strong>${termoBusca}</strong>"` : 'Cadastre a primeira peça usando o botão abaixo!'}</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = pecas.map(p => {
+    const qtd = p.stock ?? 0;
+    const nome = p.name || 'Sem nome';
+    const codigo = p.code || 'S/N';
+    const preco = parseFloat(p.price || 0);
+    const marcaNome = p.brand?.name || 'Sem marca';
+
+    const estoqueClass = qtd === 0 ? 'estoque-out' : qtd < 3 ? 'estoque-low' : 'estoque-ok';
+    const estoqueLabel = qtd === 0 ? '⛔ Sem estoque' : qtd < 3 ? `⚠ ${qtd} restantes` : `✓ ${qtd} em estoque`;
+
+    return `
+      <div class="product-card">
+        <div class="card-img" style="background:#eee; height:150px; display:flex; align-items:center; justify-content:center; position:relative;">
+          <div style="font-size: 2.5rem;">🔩</div>
+          <span class="estoque-tag ${estoqueClass}" style="position:absolute; top:10px; right:10px; font-size:0.7rem; padding:4px 8px; border-radius:4px; background:#fff; font-weight:bold;">${estoqueLabel}</span>
+        </div>
+        <div class="card-body" style="padding:15px;">
+          <div style="font-size:0.75rem; color:#888; text-transform:uppercase;">${marcaNome}</div>
+          <div style="font-weight:bold; font-size:1.1rem; margin:5px 0;">${nome}</div>
+          <div style="font-size:0.8rem; color:#666;">Cód: ${codigo}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+            <div style="font-weight:bold; color:var(--primaria); font-size:1.2rem;"><small style="font-size:0.8rem;">R$</small> ${preco.toFixed(2).replace('.', ',')}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ==========================================
+   PAGINAÇÃO E FILTROS
+   ========================================== */
+function renderPaginacao() {
+  const wrap = document.getElementById('paginacao');
+  if (!wrap) return;
+  if (totalPaginas <= 1) { wrap.style.display = 'none'; return; }
+  
+  wrap.style.display = 'flex';
+  wrap.innerHTML = `
+    <button ${paginaAtual === 1 ? 'disabled' : ''} onclick="irPagina(${paginaAtual - 1})">Anterior</button>
+    <span style="padding: 0 15px;">Página ${paginaAtual} de ${totalPaginas}</span>
+    <button ${paginaAtual === totalPaginas ? 'disabled' : ''} onclick="irPagina(${paginaAtual + 1})">Próxima</button>
+  `;
+}
+
+function irPagina(n) {
+  paginaAtual = n;
+  carregarPecas();
+}
+
+function filtrarMarca(marcaId, btn) {
+  filtroMarca = marcaId;
+  paginaAtual = 1;
+  document.querySelectorAll('#filtros-marca .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  carregarPecas();
+}
+
+function debounceSearch(valor) {
+  clearTimeout(timerDebounce);
+  timerDebounce = setTimeout(() => {
+    termoBusca = valor.trim();
+    paginaAtual = 1;
+    carregarPecas();
+  }, 400);
+}
+
+/* ==========================================
+   MODAL E FOTO
+   ========================================== */
+function abrirModal() {
+  const overlay = document.getElementById('overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function fecharModal() {
+  const overlay = document.getElementById('overlay');
+  if (overlay) {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function fecharModalOverlay(e) {
+  if (e.target === document.getElementById('overlay')) fecharModal();
+}
+
+function previewModalPhoto(input) {
+  const img = document.getElementById('modal-preview-img');
+  if (input.files && input.files[0] && img) {
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function mostrarToast(msg, tipo = 'sucesso') {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  const msgEl = document.getElementById('toast-msg');
+  if (!t || !icon || !msgEl) return;
+
+  msgEl.textContent = msg;
+  icon.textContent = tipo === 'erro' ? '❌' : (tipo === 'aviso' ? '⚠️' : '✅');
+  t.className = `toast ${tipo} show`;
+  setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+/* ==========================================
+   CADASTRO DE PEÇA (POST)
+   ========================================== */
+// Localize a função responsável por salvar a peça no seu script.js
+async function salvarPeca(event) {
+  if (event) event.preventDefault();
+
+  // 1. CAPTURA O TOKEN DE LOGIN (ajuste a chave se o seu sistema salvou com outro nome, ex: 'auth_token')
+  const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+
+  // Captura dos dados dos campos do formulário
+  const name = document.getElementById('m-name')?.value || document.getElementById('name')?.value;
+  const code = document.getElementById('m-code')?.value || document.getElementById('code')?.value;
+  const brandId = document.getElementById('m-brandId')?.value;
+  const description = document.getElementById('m-description')?.value;
+  const stock = parseInt(document.getElementById('m-stock')?.value || 0);
+  const price = parseFloat(document.getElementById('m-price')?.value || 0);
+  
+  // Pega os IDs dos veículos selecionados na listagem múltipla
+  const selectVeiculos = document.getElementById('m-vehicles');
+  const vehicleIds = selectVeiculos 
+    ? Array.from(selectVeiculos.selectedOptions).map(opt => opt.value)
+    : [];
+
+  const dadosPeca = { name, code, brandId, description, stock, price, vehicleIds };
+
+  try {
+    // 2. ENVIO COM OS HEADERS DE AUTENTICAÇÃO
+    const resposta = await fetch('http://localhost:3000/api/v1/parts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Se houver um token no localStorage, ele é enviado aqui:
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      body: JSON.stringify(dadosPeca)
+    });
+
+    // Se o back-end ainda disser que não está autorizado
+    if (resposta.status === 401 || resposta.status === 403) {
+      throw new Error('Authentication required');
+    }
+
+    if (!resposta.ok) {
+      const erroDados = await resposta.json().catch(() => ({}));
+      throw new Error(erroDados.message || 'Erro ao salvar a peça');
+    }
+
+    // Sucesso!
+    alert('Peça cadastrada com sucesso!');
+    
+    // Fecha o modal (ajuste o nome da sua função se for diferente)
+    if (typeof fecharModal === 'function') fecharModal(); 
+    
+    // Recarrega a listagem da página principal
+    if (typeof carregarPecas === 'function') carregarPecas();
+
+  } catch (erro) {
+    console.error('Erro no cadastro:', erro);
+    // Aqui o seu código atual já dispara aquele Toast/Aviso vermelho na tela
+    mostrarToast(erro.message, 'erro'); 
+  }
+}
+
+function limparModal() {
+  ['m-nome', 'm-oem', 'm-descricao', 'm-qtd', 'm-venda', 'm-minstock'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  
+  const brandSel = document.getElementById('m-brandId');
+  if (brandSel) brandSel.value = '';
+  
+  const vehicleSel = document.getElementById('m-vehicles');
+  if (vehicleSel) {
+    Array.from(vehicleSel.options).forEach(o => o.selected = false);
+  }
+  
+  const img = document.getElementById('modal-preview-img');
+  if (img) { img.src = ''; img.style.display = 'none'; }
+}
+
+/* ==========================================
+   INICIALIZAÇÃO DA PÁGINA
+   ========================================== */
+document.addEventListener('DOMContentLoaded', async () => {
+  await verificarApiStatus();
+  await Promise.all([
+    carregarMarcas(),
+    carregarVeiculos()
+  ]);
+  await carregarPecas();
+});
+
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --azul:       #1B3A52;
+      --azul-light: #2A5C84;
+      --verde:      #28A745;
+      --verde-dark: #1e8035;
+      --laranja:    #FD7E14;
+      --cinza-bg:   #F4F6F9;
+      --cinza-card: #FFFFFF;
+      --cinza-borda:#E2E8F0;
+      --texto:      #1a2533;
+      --texto-sub:  #5a6a7e;
+      --shadow-sm:  0 2px 8px rgba(0,0,0,.07);
+      --shadow-md:  0 8px 28px rgba(0,0,0,.12);
+      --shadow-lg:  0 20px 60px rgba(0,0,0,.18);
+      --radius:     14px;
+      --radius-sm:  8px;
+    }
+ 
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--cinza-bg);
+      color: var(--texto);
+      min-height: 100vh;
+    }
+ 
+    /* ===== HEADER ===== */
+    header {
+      background: var(--azul);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .logo-img-wrap img { height: 48px; width: 48px; object-fit: contain; border-radius: 10px; }
+    .logo-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.25rem;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .logo-title span { color: var(--verde); }
+    .logo-sub { font-size: .7rem; color: rgba(255,255,255,.55); letter-spacing: 2px; text-transform: uppercase; }
+ 
+    nav { display: flex; align-items: center; gap: 6px; }
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      text-decoration: none;
+      color: rgba(255,255,255,.75);
+      font-size: .85rem;
+      font-weight: 500;
+      transition: background .2s, color .2s;
+    }
+    nav a:hover, nav a.active { background: rgba(255,255,255,.12); color: #fff; }
+    nav a svg { width: 18px; height: 18px; }
+    .nav-text { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+ 
+    /* ===== BANNER DA LOJA ===== */
+    .store-banner {
+      background: linear-gradient(135deg, var(--azul) 0%, var(--azul-light) 100%);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .store-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .store-banner-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 36px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      position: relative;
+    }
+    .store-logo-wrap {
+      width: 110px;
+      height: 110px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.13);
+      border: 3px solid rgba(255,255,255,.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      font-size: 3rem;
+    }
+    .store-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .store-info { flex: 1; }
+    .store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(40,167,69,.25);
+      border: 1px solid rgba(40,167,69,.4);
+      color: #7affa0;
+      font-size: .7rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 50px;
+      margin-bottom: 8px;
+    }
+    .store-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .store-desc { color: rgba(255,255,255,.65); font-size: .9rem; max-width: 500px; }
+    .store-stats { display: flex; gap: 24px; margin-top: 18px; }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .stat-label { font-size: .7rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-divider { width: 1px; background: rgba(255,255,255,.15); align-self: stretch; }
+ 
+    /* ===== API STATUS BAR ===== */
+    .api-status-bar {
+      background: rgba(0,0,0,.15);
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .api-status-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .75rem;
+      color: rgba(255,255,255,.55);
+    }
+    .api-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #aaa;
+      flex-shrink: 0;
+      transition: background .4s;
+    }
+    .api-dot.ok      { background: #28A745; box-shadow: 0 0 6px #28A74588; }
+    .api-dot.erro    { background: #dc3545; }
+    .api-dot.loading { background: #FD7E14; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+ 
+    .products-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 24px 60px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .section-title-main {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--azul);
+    }
+    .section-title-main span { color: var(--verde); }
+ 
+    .filters-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--texto-sub);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      padding: 8px 14px 8px 36px;
+      border-radius: 50px;
+      border: 1.5px solid var(--cinza-borda);
+      background: #fff;
+      font-size: .85rem;
+      font-family: 'Roboto', sans-serif;
+      color: var(--texto);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-input:focus { border-color: var(--azul-light); }
+ 
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 50px;
+      border: 1.5px solid var(--cinza-borda);
+      background: #fff;
+      color: var(--texto-sub);
+      font-size: .8rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-btn:hover  { border-color: var(--verde); color: var(--verde); }
+    .filter-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+ 
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+ 
+    .product-card {
+      background: var(--cinza-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      border: 1.5px solid var(--cinza-borda);
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .card-img {
+      width: 100%;
+      height: 170px;
+      background: #eef1f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #c5ccd6;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-img .no-img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #eef1f5, #dde3ec);
+      font-size: 3.5rem;
+    }
+    .estoque-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: .65rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 50px;
+    }
+    .estoque-ok  { background: rgba(40,167,69,.15);  color: var(--verde); }
+    .estoque-low { background: rgba(253,126,20,.15); color: var(--laranja); }
+    .estoque-out { background: rgba(220,53,69,.12);  color: #dc3545; }
+ 
+    .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+    .card-familia {
+      font-size: .68rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: var(--azul-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .card-nome {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--texto);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .card-oem  { font-size: .72rem; color: var(--texto-sub); margin-bottom: 10px; }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+    .card-preco {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--verde);
+    }
+    .card-preco small { font-size: .7rem; font-weight: 600; color: var(--texto-sub); }
+    .card-marca {
+      font-size: .72rem;
+      background: var(--cinza-bg);
+      color: var(--texto-sub);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+ 
+    .skeleton {
+      background: var(--cinza-card);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--cinza-borda);
+      overflow: hidden;
+    }
+    .skeleton-img {
+      width: 100%;
+      height: 170px;
+      background: linear-gradient(90deg, #eef1f5 25%, #dde3ec 50%, #eef1f5 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skeleton-body { padding: 14px 16px 16px; }
+    .skeleton-line {
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #eef1f5 25%, #dde3ec 50%, #eef1f5 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skeleton-line.short { width: 60%; }
+    .skeleton-line.long  { width: 90%; }
+    .skeleton-line.med   { width: 75%; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+ 
+    /* Estado vazio */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--texto-sub);
+    }
+    .empty-state .empty-icon { font-size: 4rem; margin-bottom: 16px; }
+    .empty-state h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--azul);
+      margin-bottom: 8px;
+    }
+    .empty-state p { font-size: .9rem; }
+ 
+    .error-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 24px;
+      background: #fff5f5;
+      border-radius: var(--radius);
+      border: 1.5px solid #fed7d7;
+    }
+    .error-state .error-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .error-state h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #dc3545;
+      margin-bottom: 6px;
+    }
+    .error-state p { font-size: .85rem; color: var(--texto-sub); margin-bottom: 16px; }
+    .btn-retry {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: .85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-retry:hover { background: #b02a37; }
+ 
+    /* Paginação */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 32px;
+    }
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--cinza-borda);
+      background: #fff;
+      color: var(--texto-sub);
+      font-family: 'Montserrat', sans-serif;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--verde); color: var(--verde); }
+    .page-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+    .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .page-info { font-size: .8rem; color: var(--texto-sub); padding: 0 8px; }
+ 
+    /* Botão add */
+    .add-btn-wrap { display: flex; justify-content: center; margin-top: 36px; }
+    .btn-add-peca {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--verde);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 32px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(40,167,69,.35);
+      transition: background .2s, transform .15s, box-shadow .2s;
+      letter-spacing: .5px;
+    }
+    .btn-add-peca:hover { background: var(--verde-dark); transform: translateY(-2px); box-shadow: 0 10px 32px rgba(40,167,69,.45); }
+    .btn-add-peca svg { width: 22px; height: 22px; }
+ 
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,20,35,.55);
+      z-index: 200;
+      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .overlay.open { display: flex; }
+ 
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn .25s cubic-bezier(.34,1.3,.64,1) both;
+      scrollbar-width: thin;
+      scrollbar-color: var(--cinza-borda) transparent;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.92) translateY(20px); }
+      to   { opacity: 1; transform: scale(1)  translateY(0); }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 26px 18px;
+      border-bottom: 1.5px solid var(--cinza-borda);
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 10;
+      border-radius: 20px 20px 0 0;
+    }
+    .modal-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--azul);
+    }
+    .modal-title span { color: var(--verde); }
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--cinza-bg);
+      color: var(--texto-sub);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s, color .2s;
+      line-height: 1;
+    }
+    .modal-close:hover { background: #fde8e8; color: #dc3545; }
+    .modal-body { padding: 22px 26px 26px; }
+ 
+    .form-section-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--azul-light);
+      border-left: 3px solid var(--verde);
+      padding-left: 10px;
+      margin-bottom: 14px;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.one   { grid-template-columns: 1fr; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: .8rem; font-weight: 600; color: var(--texto); }
+    .req { color: var(--laranja); }
+    .field input,
+    .field select,
+    .field textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--cinza-borda);
+      border-radius: var(--radius-sm);
+      font-size: .9rem;
+      font-family: 'Roboto', sans-serif;
+      color: var(--texto);
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+      width: 100%;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--azul-light);
+      box-shadow: 0 0 0 3px rgba(42,92,132,.12);
+    }
+    .field input.erro,
+    .field select.erro { border-color: #dc3545; }
+    .field .erro-msg { font-size: .75rem; color: #dc3545; margin-top: 2px; }
+    .field textarea { resize: vertical; min-height: 90px; }
+ 
+    .price-group { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .price-prefix { position: relative; }
+    .price-prefix span {
+      position: absolute;
+      left: 12px;
+      bottom: 11px;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--texto-sub);
+      pointer-events: none;
+    }
+    .price-prefix input { padding-left: 36px; }
+ 
+    .select-loading {
+      position: relative;
+    }
+    .select-loading::after {
+      content: '';
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--cinza-borda);
+      border-top-color: var(--azul-light);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .select-loading.carregando::after { display: block; }
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+ 
+    /* Photo drop */
+    .photo-drop {
+      border: 2px dashed var(--cinza-borda);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      background: var(--cinza-bg);
+    }
+    .photo-drop:hover, .photo-drop.dragover { border-color: var(--verde); background: rgba(40,167,69,.04); }
+    .photo-drop input[type="file"] { display: none; }
+    .photo-drop-icon { font-size: 2.2rem; margin-bottom: 8px; }
+    .photo-drop p { font-size: .85rem; color: var(--texto-sub); }
+    .photo-drop strong { color: var(--verde); }
+    #modal-preview-img {
+      display: none;
+      max-width: 100%;
+      max-height: 180px;
+      border-radius: 10px;
+      margin-top: 12px;
+      object-fit: contain;
+    }
+ 
+    /* Modal actions */
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--cinza-borda);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 11px 24px;
+      border-radius: 50px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      border: none;
+    }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--cinza-borda);
+      color: var(--texto-sub);
+    }
+    .btn-outline:hover:not(:disabled) { border-color: #aaa; color: var(--texto); }
+    .btn-primary { background: var(--verde); color: #fff; box-shadow: 0 4px 16px rgba(40,167,69,.3); }
+    .btn-primary:hover:not(:disabled) { background: var(--verde-dark); }
+    .btn-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .btn-primary.salvando .btn-spinner { display: inline-block; }
+ 
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      padding: 14px 22px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .92rem;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,.22);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform .35s cubic-bezier(.34,1.3,.64,1), opacity .3s;
+      pointer-events: none;
+      max-width: 340px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.sucesso { background: var(--azul); color: #fff; }
+    .toast.erro    { background: #dc3545; color: #fff; }
+    .toast.aviso   { background: var(--laranja); color: #fff; }
+ 
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--azul);
+      color: #fff;
+      padding: 48px 0 0;
+      margin-top: 40px;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 40px;
+    }
+    .footer-brand h2 { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 900; margin-bottom: 10px; }
+    .footer-brand h2 span { color: var(--verde); }
+    .footer-brand p { font-size: .85rem; color: rgba(255,255,255,.55); line-height: 1.6; margin-bottom: 16px; }
+    .footer-col h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 14px;
+    }
+    .footer-col a {
+      display: block;
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      font-size: .85rem;
+      margin-bottom: 8px;
+      transition: color .2s;
+    }
+    .footer-col a:hover { color: var(--verde); }
+    .team-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 24px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .team-section h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 14px;
+    }
+    .team-members { display: flex; gap: 14px; flex-wrap: wrap; }
+    .member {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50px;
+      padding: 7px 16px 7px 7px;
+    }
+    .member-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: .75rem;
+    }
+    .member-name { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.8); }
+    .footer-copy {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding: 16px 24px;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-copy p { font-size: .8rem; color: rgba(255,255,255,.4); }
+    .verde { color: var(--verde); }
+ 
+    @media (max-width: 768px) {
+      .store-banner-inner { flex-direction: column; text-align: center; align-items: center; }
+      .store-stats { justify-content: center; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid.three { grid-template-columns: 1fr; }
+      .price-group { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .filters-row { flex-direction: column; align-items: flex-start; }
+      .search-input-wrap { max-width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .store-name { font-size: 1.5rem; }
+      .products-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+

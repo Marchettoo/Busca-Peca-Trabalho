@@ -1,0 +1,203 @@
+
+
+
+"Adicione um novo campo chamado 'Garantia (meses)' neste formulário."
+
+
+
+<!-- PRODUTOS -->
+<div class="products-section">
+  <div class="section-header">
+    <h2 class="section-title-main">Peças <span>Cadastradas</span></h2>
+    <div class="filters-row">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Buscar peça ou código…"
+          oninput="debounceSearch(this.value)"
+        />
+      </div>
+      <div class="filters" id="filtros-marca">
+        <button class="filter-btn active" onclick="filtrarMarca(null, this)">Todas as marcas</button>
+        <!-- Marcas carregadas via JS -->
+      </div>
+    </div>
+  </div>
+ 
+  <div class="products-grid" id="products-grid">
+    <!-- Skeletons iniciais -->
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line med"></div></div></div>
+  </div>
+ 
+  <!-- Paginação -->
+  <div class="pagination" id="paginacao" style="display:none"></div>
+ 
+  <!-- Botão de adicionar peça -->
+  <div class="add-btn-wrap">
+    <button class="btn-add-peca" onclick="abrirModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="16"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+      </svg>
+      Cadastrar Nova Peça
+    </button>
+  </div>
+</div>
+ 
+<!-- OVERLAY + MODAL -->
+<div class="overlay" id="overlay" onclick="fecharModalOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title">Cadastrar <span>Nova Peça</span></div>
+      <button class="modal-close" onclick="fecharModal()" title="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+ 
+      <!-- Identificação -->
+      <div class="form-section-label" style="margin-bottom:16px">🔧 Identificação da Peça</div>
+      <div class="form-grid one" style="margin-bottom:14px">
+        <div class="field">
+          <label>Nome da Peça <span class="req">*</span></label>
+          <input type="text" id="m-nome" placeholder="Ex: Amortecedor Dianteiro Esquerdo" />
+        </div>
+      </div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field">
+          <label>Código da Peça <span class="req">*</span></label>
+          <input type="text" id="m-oem" placeholder="Ex: 4852002271" oninput="this.value=this.value.replace(/[^A-Z0-9a-z-]/g,'').toUpperCase()" />
+        </div>
+        <div class="field">
+          <label>Marca <span class="req">*</span></label>
+          <div class="select-loading" id="select-marca-wrap">
+            <select id="m-brandId">
+              <option value="">Carregando marcas…</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:22px">
+        <label>Descrição</label>
+        <textarea id="m-descricao" placeholder="Descreva a peça, compatibilidade, observações técnicas…"></textarea>
+      </div>
+ 
+      <!-- Estoque -->
+      <div class="form-section-label" style="margin-bottom:16px">📦 Estoque</div>
+      <div class="form-grid" style="margin-bottom:22px">
+        <div class="field">
+          <label>Qtd. em Estoque <span class="req">*</span></label>
+          <input type="number" id="m-qtd" placeholder="0" min="0" />
+        </div>
+        <div class="field">
+          <label>Veículos Compatíveis</label>
+          <select id="m-vehicles" multiple style="height:80px">
+            <option value="">Carregando veículos…</option>
+          </select>
+          <span style="font-size:.72rem;color:var(--texto-sub);margin-top:3px">Segure Ctrl para selecionar vários</span>
+        </div>
+      </div>
+
+
+
+
+/* ==========================================
+   CADASTRO DE PEÇA (POST)
+   ========================================== */
+// Localize a função responsável por salvar a peça no seu script.js
+async function salvarPeca(event) {
+  if (event) event.preventDefault();
+
+  // 1. CAPTURA O TOKEN DE LOGIN (ajuste a chave se o seu sistema salvou com outro nome, ex: 'auth_token')
+  const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+
+  // Captura dos dados dos campos do formulário
+  const name = document.getElementById('m-name')?.value || document.getElementById('name')?.value;
+  const code = document.getElementById('m-code')?.value || document.getElementById('code')?.value;
+  const brandId = document.getElementById('m-brandId')?.value;
+  const description = document.getElementById('m-description')?.value;
+  const stock = parseInt(document.getElementById('m-stock')?.value || 0);
+  const price = parseFloat(document.getElementById('m-price')?.value || 0);
+  
+  // Pega os IDs dos veículos selecionados na listagem múltipla
+  const selectVeiculos = document.getElementById('m-vehicles');
+  const vehicleIds = selectVeiculos 
+    ? Array.from(selectVeiculos.selectedOptions).map(opt => opt.value)
+    : [];
+
+  const dadosPeca = { name, code, brandId, description, stock, price, vehicleIds };
+
+  try {
+    // 2. ENVIO COM OS HEADERS DE AUTENTICAÇÃO
+    const resposta = await fetch('http://localhost:3000/api/v1/parts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Se houver um token no localStorage, ele é enviado aqui:
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      body: JSON.stringify(dadosPeca)
+    });
+
+    // Se o back-end ainda disser que não está autorizado
+    if (resposta.status === 401 || resposta.status === 403) {
+      throw new Error('Authentication required');
+    }
+
+    if (!resposta.ok) {
+      const erroDados = await resposta.json().catch(() => ({}));
+      throw new Error(erroDados.message || 'Erro ao salvar a peça');
+    }
+
+    // Sucesso!
+    alert('Peça cadastrada com sucesso!');
+    
+    // Fecha o modal (ajuste o nome da sua função se for diferente)
+    if (typeof fecharModal === 'function') fecharModal(); 
+    
+    // Recarrega a listagem da página principal
+    if (typeof carregarPecas === 'function') carregarPecas();
+
+  } catch (erro) {
+    console.error('Erro no cadastro:', erro);
+    // Aqui o seu código atual já dispara aquele Toast/Aviso vermelho na tela
+    mostrarToast(erro.message, 'erro'); 
+  }
+}
+
+function limparModal() {
+  ['m-nome', 'm-oem', 'm-descricao', 'm-qtd', 'm-venda', 'm-minstock'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  
+  const brandSel = document.getElementById('m-brandId');
+  if (brandSel) brandSel.value = '';
+  
+  const vehicleSel = document.getElementById('m-vehicles');
+  if (vehicleSel) {
+    Array.from(vehicleSel.options).forEach(o => o.selected = false);
+  }
+  
+  const img = document.getElementById('modal-preview-img');
+  if (img) { img.src = ''; img.style.display = 'none'; }
+}
+
+/* ==========================================
+   INICIALIZAÇÃO DA PÁGINA
+   ========================================== */
+document.addEventListener('DOMContentLoaded', async () => {
+  await verificarApiStatus();
+  await Promise.all([
+    carregarMarcas(),
+    carregarVeiculos()
+  ]);
+  await carregarPecas();
+});
