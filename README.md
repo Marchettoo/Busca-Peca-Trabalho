@@ -21,7 +21,7 @@ Suas diretrizes técnicas obrigatórias são:
 - Quando solicitado a simular um banco de dados ou API de peças, responda estritamente no formato JSON.
 
 Evidência da Configuração do System Prompt:
-![Instruções passadas para a IA](.//As%20instrucoes%20que%20foram%20passadas%20para%20a%20IA%20fazer%20o%20few-shot.png)
+![Instruções passadas para a IA](./evidencias-imagens/As%20instrucoes%20que%20foram%20passadas%20para%20a%20IA%20fazer%20o%20few-shot.png)
 
 ---
 
@@ -54,7 +54,7 @@ Entrada: COFAP-789
 
 
 Evidência da Chamada Few-Shot (Entrada e Saída em JSON):
-![O que foi pedido para a IA em few-shot](./O%20que%20foi%20pedido%20para%20a%20IA%20em%20few-shot.png)
+![O que foi pedido para a IA em few-shot](./evidencias-imagens/O%20que%20foi%20pedido%20para%20a%20IA%20em%20few-shot.png)
 
 ---
 
@@ -79,16 +79,16 @@ Conclusão: A curadoria de contexto reduz o consumo de tokens de entrada em 88%,
 Evidências dos Testes de Contexto
 
 A) Respostas geradas com Contexto Sujo (Envio do código inteiro):
-![HTML Sujo](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20HTM%20prompt%20(sujo).png)
-![CSS Sujo](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20CSS%20prompt%20(sujo)%20e%20que%20foi%20alterado.png)
-![JS Sujo 1](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(sujo)%201.png)
-![JS Sujo 2](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(sujo)%202.png)
+![HTML Sujo](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20HTM%20prompt%20(sujo).png)
+![CSS Sujo](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20CSS%20prompt%20(sujo)%20e%20que%20foi%20alterado.png)
+![JS Sujo 1](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(sujo)%201.png)
+![JS Sujo 2](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(sujo)%202.png)
 
 B) Respostas geradas com Contexto Limpo (Envio do trecho curado):
-![HTML Limpo](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20HTM%20prompt%20(limpo).png)
-![JS Limpo 1](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(limpo)%201.png)
-![JS Limpo 2](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(limpo)%202.png)
-![JS Limpo 3](./IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(limpo)%203.png)
+![HTML Limpo](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20HTM%20prompt%20(limpo).png)
+![JS Limpo 1](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(limpo)%201.png)
+![JS Limpo 2](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(limpo)%202.png)
+![JS Limpo 3](./evidencias-imagens/IA%20adicionando%20o%20que%20foi%20pedido%20no%20JS%20prompt%20(limpo)%203.png)
 
 ---
 
