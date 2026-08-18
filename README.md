@@ -21,7 +21,7 @@ Suas diretrizes técnicas obrigatórias são:
 - Quando solicitado a simular um banco de dados ou API de peças, responda estritamente no formato JSON.
 
 Evidência da Configuração do System Prompt:
-![Instruções passadas para a IA](./As%20instrucoes%20que%20foram%20passadas%20para%20a%20IA%20fazer%20o%20few-shot.png)
+![Instruções passadas para a IA](.//As%20instrucoes%20que%20foram%20passadas%20para%20a%20IA%20fazer%20o%20few-shot.png)
 
 ---
 
