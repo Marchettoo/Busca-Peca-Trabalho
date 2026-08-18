@@ -113,8 +113,12 @@ Abaixo estão os registros do painel do Google AI Studio comprovando os valores 
 
 *   Evidência Chamada 1 (Contexto Sujo): 
 <img width="254" height="408" alt="Tokens de entrade e de saida Prompt (sujo)" src="https://github.com/user-attachments/assets/3acaccff-af8e-4e3e-814a-a8d960b7df2c" />
+
+
 *   Evidência Chamada 2 (Contexto Limpo): 
 <img width="243" height="400" alt="Tokens de entrade e de saida Prompt (limpo)" src="https://github.com/user-attachments/assets/8ed1141a-7355-4614-8bb2-ce98896f6660" />
+
+
 *   Evidência Chamada 3 (Few-Shot): 
 <img width="252" height="374" alt="Tokens para fazer na estrategia few-shot" src="https://github.com/user-attachments/assets/f2073a50-7add-4ae9-ac18-8bd82c154e7c" />
 
