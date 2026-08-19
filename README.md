@@ -129,6 +129,9 @@ Abaixo estão os registros do painel do Google AI Studio comprovando os valores 
 
 <img width="304" height="460" alt="image" src="https://github.com/user-attachments/assets/530f7384-cc4e-452f-aebe-23525276d840" />
 
+
+
+
 <img width="643" height="855" alt="image" src="https://github.com/user-attachments/assets/836296fe-eac6-4b7c-839b-8f085761e3d8" />
 
 
