@@ -107,7 +107,7 @@ Nota: Os testes foram executados via Free Tier do Google AI Studio (custo real $
 
 ---
 
-## 6. Evidências do Dashboard / Métricas
+## 6. Evidências do Dashboard / Métricas / Evidencias Do site 
 
 Abaixo estão os registros do painel do Google AI Studio comprovando os valores inseridos na tabela de custos:
 
@@ -122,7 +122,14 @@ Abaixo estão os registros do painel do Google AI Studio comprovando os valores 
 *   Evidência Chamada 3 (Few-Shot): 
 <img width="252" height="374" alt="Tokens para fazer na estrategia few-shot" src="https://github.com/user-attachments/assets/f2073a50-7add-4ae9-ac18-8bd82c154e7c" />
 
-(Nota: Como as imagens originais do dashboard do Google AI Studio não foram anexadas, substitua os colchetes acima pelos prints da tela de métricas do seu painel).
+* Evidencias do site em funcionamento 
+
+<img width="304" height="460" alt="image" src="https://github.com/user-attachments/assets/530f7384-cc4e-452f-aebe-23525276d840" />
+
+<img width="1452" height="944" alt="image" src="https://github.com/user-attachments/assets/5d10d60b-5c20-4967-b607-2a880f835aa4" />
+
+<img width="643" height="855" alt="image" src="https://github.com/user-attachments/assets/836296fe-eac6-4b7c-839b-8f085761e3d8" />
+
 
 ---
 
