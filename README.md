@@ -130,7 +130,7 @@ Abaixo estão os registros do painel do Google AI Studio comprovando os valores 
 
 Link da aplicação web on-line: [buscapeca.netlify.app](https://buscapeca.netlify.app)
 
-Aplicação em produção: [https://github.com/GuilhermeDeCosta/Busca-Peca-Web](https://github.com/Marchettoo/Busca-Peca-Teste)
+Aplicação em produção: https://github.com/Marchettoo/Busca-Peca-Teste
 
 ---
 
