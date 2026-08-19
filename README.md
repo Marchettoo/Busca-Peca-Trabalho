@@ -128,6 +128,8 @@ Abaixo estão os registros do painel do Google AI Studio comprovando os valores 
 
 ## 7. URL do Projeto Publicado
 
+Link da aplicação web on-line: buscapeca.netlify.app
+
 Aplicação em produção: https://github.com/GuilhermeDeCosta/Busca-Peca-Web
 
 ---
